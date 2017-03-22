@@ -1,3 +1,6 @@
-[submodule "src/lib/libfmsynth"]
-	path = src/lib/libfmsynth
+[submodule "lib/libfmsynth"]
+	path = lib/libfmsynth
+	url = https://github.com/Themaister/libfmsynth.git
+[submodule "modules/libfmsynth"]
+	path = modules/libfmsynth
 	url = https://github.com/Themaister/libfmsynth.git
