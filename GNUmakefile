@@ -7,14 +7,26 @@ LINKS = -lfmsynth
 
 OFILE = ./bin/synther
 
-dep:
+OBJ = Main.o
+
+all: $(OBJ)
+
+%.o: %.cpp
+	$(CXX) -Weverything -std=c++11 -c $(INC) -o ./obj/$@ $<
+
+$(OBJ) : dep obj
+
+dep: lib
 	# libfmsynth
 	$(MAKE) -C ./modules/libfmsynth
-	mkdir ./lib
 	cp ./modules/libfmsynth/libfmsynth.a ./lib/libfmsynth.a
 	cp -a ./modules/libfmsynth/include ./
 
-.PHONY: all
+lib:
+	mkdir ./lib
 
-all: $(dep) ./src/Main.cpp
-	$(CXX) -Weverything $(INC) ./src/Main.cpp $(LIB) $(LINKS) -o ./bin/snther
+
+obj:
+	mkdir ./obj
+
+.PHONY: all $(OBJ)
