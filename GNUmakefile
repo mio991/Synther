@@ -12,7 +12,7 @@ OBJ = Main.o
 #VPATH = src/
 
 all: $(addprefix obj/, $(OBJ)) bin dep
-	$(CXX) $(LIB) $(LINKS) -o $(OFILE) $(addprefix obj/, $(OBJ))
+	$(CXX) -o $(OFILE) $(addprefix obj/, $(OBJ)) $(LIB) $(LINKS) 
 
 obj/%.o: src/%.cpp
 	echo compiled $@
