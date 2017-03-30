@@ -9,10 +9,14 @@ OFILE = ./bin/synther
 
 OBJ = Main.o
 
-all: $(OBJ)
+#VPATH = src/
 
-%.o: %.cpp
-	$(CXX) -Weverything -std=c++11 -c $(INC) -o ./obj/$@ $<
+all: $(addprefix obj/, $(OBJ))
+	$(CXX) $(LIB) $(LINKS) -o $(OFILE) $(addprefix obj/, $(OBJ))
+
+obj/%.o: src/%.cpp
+	echo compiled $@
+	$(CXX) -Weverything -std=c++11 -c $(INC) -o $@ $<
 
 $(OBJ) : dep obj
 
