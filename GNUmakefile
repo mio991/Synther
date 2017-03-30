@@ -9,16 +9,15 @@ OFILE = ./bin/synther
 
 OBJ = Main.o
 
-#VPATH = src/
+OBJF = $(addprefix obj/, $(OBJ))
 
-all: $(addprefix obj/, $(OBJ)) bin dep
-	$(CXX) -o $(OFILE) $(addprefix obj/, $(OBJ)) $(LIB) $(LINKS) 
+all: $(OBJF) bin dep
+	$(CXX) -o $(OFILE) $(OBJF) $(LIB) $(LINKS)
+
+$(OBJF) : dep obj
 
 obj/%.o: src/%.cpp
-	echo compiled $@
 	$(CXX) -Weverything -std=c++11 -c $(INC) -o $@ $<
-
-$(OBJ) : dep obj
 
 dep: lib
 	# libfmsynth
