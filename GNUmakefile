@@ -3,11 +3,11 @@ CXX = clang++
 INC = -I./include
 LIB = -L./lib
 
-LINKS = -lfmsynth
+LINKS = -lfmsynth -lasound
 
 OFILE = ./bin/synther
 
-OBJ = Main.o
+OBJ = staticFnc.o Main.o ISnd.o 
 
 OBJF = $(addprefix obj/, $(OBJ))
 

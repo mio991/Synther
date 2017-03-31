@@ -1,25 +1,34 @@
 #include <fmsynth.h>
 #include <iostream>
 
+#include <alsa/asoundlib.h>
+
+#include "ISnd.hpp"
+
+static unsigned int SAMPLE_RATE = 44100;
+
+static size_t FRAME_COUNT = 8096;
+
 int main() {
-  //std::cout << "Start up!" << std::endl;
 
-  float* lBuffer = new float[8096];
-  float* rBuffer = new float[8096];
+  std::cout << "Start up!" << std::endl;
 
-  fmsynth_t* fm = fmsynth_new(44100, 1);
+  ISnd* snd = new ISnd(SAMPLE_RATE);
+
+  float* lBuffer = new float[FRAME_COUNT];
+  float* rBuffer = new float[FRAME_COUNT];
+
+  fmsynth_t* fm = fmsynth_new(SAMPLE_RATE, 1);
   fmsynth_note_on(fm, 80, 20);
 
-  fmsynth_render(fm, lBuffer, rBuffer, 8096);
+  fmsynth_render(fm, lBuffer, rBuffer, FRAME_COUNT);
 
-  for(int i = 0; i < 8096; i++)
-  {
-    std::cout << static_cast<char>(lBuffer[i] * 256);
-  }
+  snd->PlayBuffers(lBuffer, rBuffer, FRAME_COUNT);
 
   fmsynth_release_all(fm);
   fmsynth_free(fm);
 
-  //std::cout << "Shut down!" << std::endl;
+  std::cout << "Shut down!" << std::endl;
+  delete snd;
   return 0;
 }
