@@ -28,3 +28,17 @@ std::string mes(const char* message)
   std::string es = "Error: ";
   return es.append(message);
 }
+
+void Interleave(float* l, float* r, float* res, size_t size)
+{
+  for(; size > 0; size--)
+  {
+    *res = *l;
+    res++;
+    l++;
+
+    *res = *r;
+    res++;
+    r++;
+  }
+}

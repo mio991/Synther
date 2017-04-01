@@ -7,7 +7,7 @@ LINKS = -lfmsynth -lasound
 
 OFILE = ./bin/synther
 
-OBJ = staticFnc.o Main.o ISnd.o 
+OBJ = staticFnc.o Main.o ISnd.o
 
 OBJF = $(addprefix obj/, $(OBJ))
 
@@ -34,8 +34,6 @@ lib:
 
 obj:
 	mkdir ./obj
-
-.PHONY: all $(OBJ)
 
 #all: $(dep) ./src/Main.cpp
 	#$(CXX) -Weverything $(INC) ./src/Main.cpp $(LIB) $(LINKS) -o ./bin/snther
