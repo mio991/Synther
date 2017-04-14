@@ -15,4 +15,5 @@ private:
   void** bufs;
   size_t frameCount;
 
+  void interleave(float* lBuffer, float* rBuffer, float* buf);
 };

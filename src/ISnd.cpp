@@ -3,8 +3,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "staticFnc.hpp"
-
 #define ALSAExec(txt, cmd) std::cout << txt << std::endl;\
   err = cmd;\
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
@@ -97,7 +95,7 @@ void ISnd::PlayBuffers(float* lBuffer, float* rBuffer){
 
   std::cout << "Interleave" << std::endl;
   float* buf = new float[frameCount*2];
-  Interleave(lBuffer, rBuffer, buf, frameCount);
+  interleave(lBuffer, rBuffer, buf);
 
 
   std::cout << "Wait!" << std::endl;
@@ -111,6 +109,20 @@ void ISnd::PlayBuffers(float* lBuffer, float* rBuffer){
 
   delete[] buf;
 
+}
+
+void ISnd::interleave(float* l, float* r, float* res)
+{
+  for(int i = 0; i < frameCount; i++)
+  {
+    *res = *l ;
+    res++;
+    l++;
+
+    *res = *r;
+    res++;
+    r++;
+  }
 }
 
 size_t ISnd::getFrameCount(){
