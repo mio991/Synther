@@ -8,9 +8,10 @@
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
 
-ISnd::ISnd(unsigned int sampleRate){
+ISnd::ISnd(unsigned int sampleRate, float mult){
   int err;
   snd_pcm_hw_params_t *hw_params;
+  volMultiplier = mult;
 
   ALSAExec("Open PCM.", snd_pcm_open (&h_pb, "default", SND_PCM_STREAM_PLAYBACK, 0))
 
@@ -47,7 +48,7 @@ ISnd::ISnd(unsigned int sampleRate){
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
   std::cout << "Set Chanel Count" << std::endl;
-  err = snd_pcm_hw_params_set_channels (h_pb, hw_params, 1);
+  err = snd_pcm_hw_params_set_channels (h_pb, hw_params, 2);
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
   std::cout << "Set Hardware Parameters" << std::endl;
@@ -103,7 +104,7 @@ void ISnd::PlayBuffers(float* lBuffer, float* rBuffer){
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
   std::cout << "Play Buffer" << std::endl;
-  err = snd_pcm_writei(h_pb, lBuffer, frameCount);
+  err = snd_pcm_writei(h_pb, buf, frameCount);
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
   std::cout << "Frames played: " << err << std::endl;
 
@@ -115,11 +116,11 @@ void ISnd::interleave(float* l, float* r, float* res)
 {
   for(int i = 0; i < frameCount; i++)
   {
-    *res = *l ;
+    *res = (*l) * volMultiplier ;
     res++;
     l++;
 
-    *res = *r;
+    *res = (*r) * volMultiplier;
     res++;
     r++;
   }

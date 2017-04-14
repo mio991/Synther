@@ -15,6 +15,7 @@ int main(int argc, char const *argv[]) {
   int frqz = 80;
   int attack = 10;
   int loops = 24;
+  float volMultiplier = 1;
 
   if(argc > 1)
   {
@@ -31,9 +32,14 @@ int main(int argc, char const *argv[]) {
     loops = atoi(argv[3]);
   }
 
+  if(argc > 4)
+  {
+    volMultiplier = atof(argv[4]);
+  }
+
   std::cout << "Start up!" << std::endl;
 
-  ISnd* snd = new ISnd(SAMPLE_RATE);
+  ISnd* snd = new ISnd(SAMPLE_RATE, volMultiplier);
 
   std::cout << "Frame Count: " << snd->getFrameCount() << std::endl;
 
