@@ -31,7 +31,7 @@ ISnd::ISnd(unsigned int sampleRate, float mult){
   snd_pcm_access_mask_malloc(&accessMask);
 
   snd_pcm_access_mask_set(accessMask, SND_PCM_ACCESS_RW_INTERLEAVED);
-  snd_pcm_access_mask_set(accessMask, SND_PCM_ACCESS_RW_NONINTERLEAVED);
+  //snd_pcm_access_mask_set(accessMask, SND_PCM_ACCESS_RW_NONINTERLEAVED);
 
   std::cout << "Set hardware parameters access mode." << std::endl;
   err = snd_pcm_hw_params_set_access_mask (h_pb, hw_params, accessMask );
@@ -85,19 +85,9 @@ void ISnd::Start(){
 void ISnd::PlayBuffers(float* lBuffer, float* rBuffer){
   int err;
 
-/*
-  bufs[0] = lBuffer;
-  bufs[1] = rBuffer;
-
-  err = snd_pcm_writen (h_pb, bufs, frameCount);
-  if ( err < 0) throw std::runtime_error(snd_strerror(err));
-  std::cout << "Frames played: " << err << std::endl;
-*/
-
   std::cout << "Interleave" << std::endl;
   float* buf = new float[frameCount*2];
   interleave(lBuffer, rBuffer, buf);
-
 
   std::cout << "Wait!" << std::endl;
   err = snd_pcm_wait(h_pb, -1);
@@ -132,10 +122,6 @@ size_t ISnd::getFrameCount(){
 
 ISnd::~ISnd(){
   int err;
-
-  std::cout << "Drain Device" << std::endl;
-  err = snd_pcm_drain (h_pb);
-  if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
   std::cout << "Close Device" << std::endl;
   err = snd_pcm_close (h_pb);

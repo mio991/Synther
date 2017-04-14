@@ -7,17 +7,17 @@ LINKS = -lfmsynth -lasound
 
 OFILE = ./bin/synther
 
-OBJ = Main.o ISnd.o
+OBJ = Main.o ISnd.o Rndr.o
 
 OBJF = $(addprefix obj/, $(OBJ))
 
 all: $(OBJF) bin dep
-	$(CXX) -o $(OFILE) $(OBJF) $(LIB) $(LINKS)
+	$(CXX) -pthread  -o $(OFILE) $(OBJF) $(LIB) $(LINKS)
 
 $(OBJF) : dep obj
 
 obj/%.o: src/%.cpp
-	$(CXX) -Weverything -std=c++11 -c $(INC) -o $@ $<
+	$(CXX) -Weverything -std=c++11 -pthread -c $(INC) -o $@ $<
 
 dep: lib
 	# libfmsynth

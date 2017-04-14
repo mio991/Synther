@@ -1,72 +1,43 @@
 #include <fmsynth.h>
 #include <iostream>
 #include <algorithm>
+#include <thread>
 
 #include <cstdlib>
 
-#include <alsa/asoundlib.h>
-
 #include "ISnd.hpp"
+#include "Rndr.hpp"
 
 static unsigned int SAMPLE_RATE = 44100;
 
-int main(int argc, char const *argv[]) {
-
-  int frqz = 80;
-  int attack = 10;
-  int loops = 24;
+int main(int argc, char const *argv[])
+{
   float volMultiplier = 1;
 
   if(argc > 1)
   {
-    frqz = atoi(argv[1]);
-  }
-
-  if(argc > 2)
-  {
-    attack = atoi(argv[2]);
-  }
-
-  if(argc > 3)
-  {
-    loops = atoi(argv[3]);
-  }
-
-  if(argc > 4)
-  {
-    volMultiplier = atof(argv[4]);
+    volMultiplier = atof(argv[1]);
   }
 
   std::cout << "Start up!" << std::endl;
 
-  ISnd* snd = new ISnd(SAMPLE_RATE, volMultiplier);
+  ISnd snd = ISnd(SAMPLE_RATE, volMultiplier);
 
-  std::cout << "Frame Count: " << snd->getFrameCount() << std::endl;
+  std::cout << "Frame Count: " << snd.getFrameCount() << std::endl;
 
-  float* lBuffer = new float[snd->getFrameCount()];
-  float* rBuffer = new float[snd->getFrameCount()];
+  Rndr rndr = Rndr(snd);
 
-  fmsynth_t* fm = fmsynth_new(SAMPLE_RATE, 1);
-  fmsynth_note_on(fm, frqz, attack);
+  std::thread trndr([](Rndr &rndr){rndr.Run();}, std::ref(rndr));
 
+  std::cout << "Press a key to end playback...";
+  char p;
+  std::cin >> p;
 
-  for(int i = 0; i < loops; i++){
+  std::cout << "Stop Renderer" << std::endl;
+  rndr.Stop();
 
-    std::fill(lBuffer, lBuffer + snd->getFrameCount(), 0);
-    std::fill(rBuffer, rBuffer + snd->getFrameCount(), 0);
-
-    fmsynth_render(fm, lBuffer, rBuffer, snd->getFrameCount());
-    snd->PlayBuffers(lBuffer, rBuffer);
-
-  }
-
-  fmsynth_release_all(fm);
-  fmsynth_free(fm);
-
-  delete[] lBuffer;
-  delete[] rBuffer;
+  trndr.join();
 
   std::cout << "Shut down!" << std::endl;
-  delete snd;
   return 0;
 }
