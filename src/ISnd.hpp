@@ -6,7 +6,7 @@ class ISnd{
 public:
   ISnd(unsigned int sampleRate, float volMultiplier = 1);
   void Start();
-  void PlayBuffers(float* lBuffer, float* rBuffer);
+  void PlayBuffers(float* Buffer);
   size_t getFrameCount();
   ~ISnd();
 

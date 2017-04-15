@@ -48,7 +48,7 @@ ISnd::ISnd(unsigned int sampleRate, float mult){
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
   std::cout << "Set Chanel Count" << std::endl;
-  err = snd_pcm_hw_params_set_channels (h_pb, hw_params, 2);
+  err = snd_pcm_hw_params_set_channels (h_pb, hw_params, 1);
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
   std::cout << "Set Hardware Parameters" << std::endl;
@@ -82,16 +82,18 @@ void ISnd::Start(){
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 }
 
-void ISnd::PlayBuffers(float* lBuffer, float* rBuffer){
+void ISnd::PlayBuffers(float* buf){
   int err;
-
-  std::cout << "Interleave" << std::endl;
-  float* buf = new float[frameCount*2];
-  interleave(lBuffer, rBuffer, buf);
 
   std::cout << "Wait!" << std::endl;
   err = snd_pcm_wait(h_pb, -1);
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
+
+  snd_pcm_sframes_t delay;
+
+  ALSAExec("Get Delay!", snd_pcm_delay (h_pb, &delay))
+
+  std::cout << "Delay: " << delay << std::endl;
 
   std::cout << "Play Buffer" << std::endl;
   err = snd_pcm_writei(h_pb, buf, frameCount);
@@ -104,7 +106,7 @@ void ISnd::PlayBuffers(float* lBuffer, float* rBuffer){
 
 void ISnd::interleave(float* l, float* r, float* res)
 {
-  for(int i = 0; i < frameCount; i++)
+  for(size_t i = 0; i < frameCount; i++)
   {
     *res = (*l) * volMultiplier ;
     res++;

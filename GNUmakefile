@@ -7,33 +7,32 @@ LINKS = -lfmsynth -lasound
 
 OFILE = ./bin/synther
 
-OBJ = Main.o ISnd.o Rndr.o
+LYROBJF = Sine.o
+
+OBJ = Main.o ISnd.o Rndr.o Lyr.o Drctr.o $(addprefix Lyr/, $(LYROBJF))
 
 OBJF = $(addprefix obj/, $(OBJ))
 
-all: $(OBJF) bin dep
-	$(CXX) -pthread  -o $(OFILE) $(OBJF) $(LIB) $(LINKS)
+all: $(OBJF) bin
+	$(CXX) -g -pthread -o $(OFILE) $(OBJF) $(LIB) $(LINKS)
 
-$(OBJF) : dep obj
+$(OBJF) : dirs #dep
 
 obj/%.o: src/%.cpp
-	$(CXX) -Weverything -std=c++11 -pthread -c $(INC) -o $@ $<
+	$(CXX) -g -Weverything -Wno-padded -Wno-c++98-compat -std=c++11 -pthread -c $(INC) -o $@ $<
 
-dep: lib
+dep: dirs
 	# libfmsynth
 	$(MAKE) -C ./modules/libfmsynth
 	cp ./modules/libfmsynth/libfmsynth.a ./lib/libfmsynth.a
 	cp -a ./modules/libfmsynth/include ./
 
-# Dirs
-bin:
-	mkdir ./bin
+dirs:
+	mkdir -p ./bin
+	mkdir  -p ./lib
+	mkdir -p ./obj
+	mkdir -p ./obj/Lyr
+	mkdir -p ./obj/Lyr
 
-lib:
-	mkdir ./lib
-
-obj:
-	mkdir ./obj
-
-#all: $(dep) ./src/Main.cpp
-	#$(CXX) -Weverything $(INC) ./src/Main.cpp $(LIB) $(LINKS) -o ./bin/snther
+clean: obj
+	rm -R ./obj

@@ -1,29 +1,24 @@
-#include "Rndr.hpp";
+#include "Rndr.hpp"
 
-Rndr::Rndr(ISnd &snd) : m_snd(snd){}
-Rndr::~Rndr(){}
+Rndr::Rndr(ISnd &snd) : m_snd(snd), m_Drctr(Drctr(snd.getFrameCount()))
+{
+
+}
 
 void Rndr::Run()
 {
-  float* lBuffer = new float[m_snd.getFrameCount()];
-  float* rBuffer = new float[m_snd.getFrameCount()];
-
-  fmsynth_t* fm = fmsynth_new(m_snd.getFrameCount(), 1);
-  fmsynth_note_on(fm, 50, 24);
+  float* buf = new float[m_snd.getFrameCount()];
 
   while(m_running)
   {
-    std::fill(lBuffer, lBuffer + m_snd.getFrameCount(), 0);
-    std::fill(rBuffer, rBuffer + m_snd.getFrameCount(), 0);
+    std::fill(buf, buf + m_snd.getFrameCount(), 0);
 
-    fmsynth_render(fm, lBuffer, rBuffer, m_snd.getFrameCount());
-    m_snd.PlayBuffers(lBuffer, rBuffer);
+
+
+    m_snd.PlayBuffers(buf);
   }
 
-  fmsynth_free(fm);
-
-  delete[] lBuffer;
-  delete[] rBuffer;
+  delete[] buf;
 }
 
 void Rndr::Stop()
