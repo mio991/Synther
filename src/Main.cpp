@@ -18,6 +18,8 @@ int main(int argc, char const *argv[])
     volMultiplier = atof(argv[1]);
   }
 
+  std::cout << "Volume: " << volMultiplier<< std::endl;
+
   std::cout << "Start up!" << std::endl;
 
   ISnd snd = ISnd(SAMPLE_RATE, volMultiplier);

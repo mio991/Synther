@@ -1,6 +1,6 @@
 #include "Rndr.hpp"
 
-Rndr::Rndr(ISnd &snd) : m_snd(snd), m_Drctr(Drctr(snd.getFrameCount()))
+Rndr::Rndr(ISnd &snd) : m_snd(snd), m_Drctr(Drctr(snd.getSampleRate()))
 {
 
 }
@@ -13,7 +13,7 @@ void Rndr::Run()
   {
     std::fill(buf, buf + m_snd.getFrameCount(), 0);
 
-
+    m_Drctr.AddLayer(buf, m_snd.getFrameCount());
 
     m_snd.PlayBuffers(buf);
   }

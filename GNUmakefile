@@ -1,4 +1,5 @@
 CXX = clang++
+CPPFLAGS =
 
 INC = -I./include
 LIB = -L./lib
@@ -19,7 +20,7 @@ all: $(OBJF) bin
 $(OBJF) : dirs #dep
 
 obj/%.o: src/%.cpp
-	$(CXX) -g -Weverything -Wno-padded -Wno-c++98-compat -std=c++11 -pthread -c $(INC) -o $@ $<
+	$(CXX) -g $(CPPFLAGS) -Weverything -Wno-padded -Wno-c++98-compat -std=c++11 -pthread -c $(INC) -o $@ $<
 
 dep: dirs
 	# libfmsynth
@@ -36,3 +37,7 @@ dirs:
 
 clean: obj
 	rm -R ./obj
+
+debug:
+	$(eval CPPFLAGS = -DPRINTALL)
+	make all

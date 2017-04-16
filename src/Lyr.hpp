@@ -5,10 +5,10 @@
 
 class Lyr {
 public:
-  Lyr(size_t sampleRate);
+  Lyr(unsigned int &sampleRate);
   virtual void AddLayer(float* buffer, size_t size) = 0;
 
 protected:
-  unsigned long m_SampleRate;
+  unsigned int &m_SampleRate;
   size_t m_SampleSize;
 };

@@ -3,12 +3,21 @@
 #include <iostream>
 #include <stdexcept>
 
+#ifdef PRINTALL
+
 #define ALSAExec(txt, cmd) std::cout << txt << std::endl;\
   err = cmd;\
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
+#else
 
-ISnd::ISnd(unsigned int sampleRate, float mult){
+#define ALSAExec(txt, cmd)  err = cmd;\
+  if ( err < 0) throw std::runtime_error(snd_strerror(err));
+
+#endif
+
+
+ISnd::ISnd(unsigned int &sampleRate, float mult) : m_SampleRate(sampleRate){
   int err;
   snd_pcm_hw_params_t *hw_params;
   volMultiplier = mult;
@@ -70,8 +79,6 @@ ISnd::ISnd(unsigned int sampleRate, float mult){
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
   std::cout << "State: " << state << std::endl;
-
-  bufs = new void*[2];
 }
 
 void ISnd::Start(){
@@ -85,22 +92,28 @@ void ISnd::Start(){
 void ISnd::PlayBuffers(float* buf){
   int err;
 
+  for(size_t i = 0; i < frameCount; i++)
+  {
+     buf[i] *= volMultiplier;
+  }
+
+  #ifdef PRINTALL
   std::cout << "Wait!" << std::endl;
+  #endif
   err = snd_pcm_wait(h_pb, -1);
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
 
+  #ifdef PRINTALL
   snd_pcm_sframes_t delay;
-
   ALSAExec("Get Delay!", snd_pcm_delay (h_pb, &delay))
-
   std::cout << "Delay: " << delay << std::endl;
-
   std::cout << "Play Buffer" << std::endl;
+  #endif
   err = snd_pcm_writei(h_pb, buf, frameCount);
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
+  #ifdef PRINTALL
   std::cout << "Frames played: " << err << std::endl;
-
-  delete[] buf;
+  #endif
 
 }
 
@@ -128,4 +141,9 @@ ISnd::~ISnd(){
   std::cout << "Close Device" << std::endl;
   err = snd_pcm_close (h_pb);
   if ( err < 0) throw std::runtime_error(snd_strerror(err));
+}
+
+unsigned int &ISnd::getSampleRate()
+{
+  return m_SampleRate;
 }

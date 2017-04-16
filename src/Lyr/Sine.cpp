@@ -4,28 +4,28 @@
 
 #include <exception>
 
-Sine::Sine(size_t sampleRate, float frqz, float offset, float attack, float hold, float decay) : Lyr(sampleRate)
+Sine::Sine(unsigned int &sampleRate, float frqz, float offset, float attack, float hold, float decay) : Lyr(sampleRate)
 {
   m_Sample = new float[m_SampleSize];
   try
   {
     auto m = [=](float x)->float{
-      if(x < 0)
+      //std::cout << x << " ";
+      if(x < offset)
       {
         return 0;
       }
-
-      if(x < attack)
+      else if(x < (offset + attack))
       {
-        return 1.0 / attack;
+        return 1.0 / attack * (x - offset);
       }
-      else if (x < attack + hold)
+      else if (x < (offset + attack + hold))
       {
         return 1.0;
       }
-      else if(x < attack + hold + decay)
+      else if(x < (offset + attack + hold + decay))
       {
-        return 1.0 - (1.0 / decay);
+        return 1.0 - (1.0 / decay) * (x - (offset + attack + hold));
       }
       else
       {
@@ -33,9 +33,17 @@ Sine::Sine(size_t sampleRate, float frqz, float offset, float attack, float hold
       }
     };
 
+    float w = (2*M_PI*frqz)/m_SampleSize;
+
     for (size_t i = 0; i < m_SampleSize; i++) {
-      m_Sample[i] = sin((2*M_PI)/((i+1)+offset))*m(1/(i+1));
+      m_Sample[i] = sin(w*i)*m(static_cast<float>(i)/m_SampleSize);
+
+      //std::cout << m_Sample[i] << std::endl;
     }
+
+    //char p;
+    //std::cin >> p;
+
   }
   catch(std::exception ex)
   {
@@ -52,7 +60,8 @@ void Sine::AddLayer(float* buffer, size_t size)
 {
   for(;0 < size;size--)
   {
-    *buffer = m_Sample[m_SamplePos];
+    *buffer += m_Sample[m_SamplePos];
+    *buffer /= 2;
     buffer++;
     m_SamplePos++;
 
